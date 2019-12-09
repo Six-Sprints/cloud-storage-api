@@ -17,6 +17,9 @@ import com.sixsprints.storage.dto.Credentials;
 import com.sixsprints.storage.dto.FileDto;
 import com.sixsprints.storage.service.CloudStorage;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class GoogleCloudStorage implements CloudStorage {
 
   private static final String BASE_URL = "https://storage.googleapis.com/";
@@ -30,6 +33,7 @@ public class GoogleCloudStorage implements CloudStorage {
       this.storage = StorageOptions.newBuilder().setCredentials(credentials)
         .setProjectId(cred.getProjectId()).build().getService();
     } catch (Exception e) {
+      log.error(e.getMessage(), e);
       throw new IllegalArgumentException("Invalid Credentials Passed");
     }
   }
