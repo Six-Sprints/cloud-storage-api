@@ -1,6 +1,8 @@
 package com.sixsprints.storage;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
@@ -18,20 +20,25 @@ public class GoogleCloudStorageTest {
 
   private static final String AUTH_JSON = "/Users/karan/Desktop/temp/google.json";
 
-  private CloudStorage storageService = new GoogleCloudStorage(
-    Credentials.builder().file(new File(AUTH_JSON)).projectId(PROJECT_ID)
-      .build());
-
   @Test
   public void shouldUpload() throws IOException {
+    CloudStorage storageService = storage();
     String upload = storageService.upload(createFileDto(0), BUCKET_NAME);
     System.out.println(upload);
   }
 
   @Test
   public void shouldResizeAndUpload() throws IOException {
+    CloudStorage storageService = storage();
     String upload = storageService.resizeAndUpload(createFileDto(1), BUCKET_NAME, 50D);
     System.out.println(upload);
+  }
+
+  private CloudStorage storage() throws FileNotFoundException {
+    CloudStorage storageService = new GoogleCloudStorage(
+      Credentials.builder().file(new FileInputStream(new File(AUTH_JSON))).projectId(PROJECT_ID)
+        .build());
+    return storageService;
   }
 
   private FileDto createFileDto(int i) {

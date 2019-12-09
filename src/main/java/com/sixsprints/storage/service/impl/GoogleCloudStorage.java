@@ -3,7 +3,6 @@ package com.sixsprints.storage.service.impl;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 
@@ -28,8 +27,7 @@ public class GoogleCloudStorage implements CloudStorage {
 
   public GoogleCloudStorage(Credentials cred) {
     try {
-      com.google.auth.Credentials credentials = GoogleCredentials
-        .fromStream(new FileInputStream(cred.getFile()));
+      com.google.auth.Credentials credentials = GoogleCredentials.fromStream(cred.getFile());
       this.storage = StorageOptions.newBuilder().setCredentials(credentials)
         .setProjectId(cred.getProjectId()).build().getService();
     } catch (Exception e) {

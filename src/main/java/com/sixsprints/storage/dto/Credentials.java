@@ -1,6 +1,6 @@
 package com.sixsprints.storage.dto;
 
-import java.io.File;
+import java.io.InputStream;
 
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +9,7 @@ import lombok.Data;
 @Builder
 public class Credentials {
 
-  private File file;
+  private InputStream file;
 
   private String projectId;
 
