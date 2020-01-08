@@ -13,4 +13,6 @@ public class FileDto {
 
   private File fileToUpload;
 
+  private byte[] bytes;
+
 }

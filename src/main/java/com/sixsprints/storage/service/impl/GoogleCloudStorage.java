@@ -2,6 +2,7 @@ package com.sixsprints.storage.service.impl;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,7 +40,7 @@ public class GoogleCloudStorage implements CloudStorage {
   @Override
   public String upload(final FileDto fileDto, final String bucket) {
     final String fileName = fileDto.getFileName();
-    byte[] bytes = fileToBytes(fileDto.getFileToUpload());
+    byte[] bytes = fileToBytes(fileDto);
     storage.create(
       BlobInfo.newBuilder(bucket, fileName).build(), bytes);
     return new StringBuffer(BASE_URL).append(bucket).append("/").append(fileDto.getFileName()).toString();
@@ -68,6 +69,9 @@ public class GoogleCloudStorage implements CloudStorage {
 
   private BufferedImage fileToBufferedImage(FileDto fileDto) {
     try {
+      if (fileDto.getBytes() != null && fileDto.getBytes().length > 0) {
+        return ImageIO.read(new ByteArrayInputStream(fileDto.getBytes()));
+      }
       return ImageIO.read(fileDto.getFileToUpload());
     } catch (IOException e) {
       throw new IllegalArgumentException("Unable to convert file to buffered image");
@@ -75,7 +79,11 @@ public class GoogleCloudStorage implements CloudStorage {
 
   }
 
-  private byte[] fileToBytes(final File file) {
+  private byte[] fileToBytes(FileDto dto) {
+    if (dto.getBytes() != null && dto.getBytes().length > 0) {
+      return dto.getBytes();
+    }
+    final File file = dto.getFileToUpload();
     try {
       return Files.readAllBytes(file.toPath());
     } catch (IOException e) {
