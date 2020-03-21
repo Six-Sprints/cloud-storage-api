@@ -18,11 +18,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class S3StorageTest {
 
-  private static final String ACCESS_ID = "AKIAVICIPFVWGA6LD5BO";
+  private static final String ACCESS_ID = "";
 
-  private static final String SECRET_KEY = "O54PGWH/mHcDLsGkikgaFeJsfLwP/sVr3OsnSUga";
+  private static final String SECRET_KEY = "";
 
-  private static final String BUCKET_NAME = "cloudscans";
+  private static final String BUCKET_NAME = "";
 
   @Test
   public void shouldUpload() throws IOException {
