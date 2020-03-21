@@ -1,15 +1,10 @@
 package com.sixsprints.storage.service.impl;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-
-import javax.imageio.ImageIO;
+import java.nio.file.Path;
 
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
@@ -20,7 +15,7 @@ import com.sixsprints.storage.service.CloudStorage;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class GoogleCloudStorage implements CloudStorage {
+public class GoogleCloudStorage extends AbstractCloudStorageService implements CloudStorage {
 
   private static final String BASE_URL = "https://storage.googleapis.com/";
 
@@ -47,72 +42,11 @@ public class GoogleCloudStorage implements CloudStorage {
   }
 
   @Override
-  public String resizeAndUpload(final FileDto fileDto, final String bucket, final Double maxImageSize) {
-    BufferedImage bufferedImage = fileToBufferedImage(fileDto);
-    bufferedImage = resizeImage(bufferedImage, maxImageSize);
-    File resizedFile = fileDto.getFileToUpload();
-    writeBufferedToFile(bufferedImage, resizedFile);
-    return upload(cloneFileDto(fileDto, resizedFile), bucket);
-  }
-
-  private FileDto cloneFileDto(FileDto fileDto, File resizedFile) {
-    return FileDto.builder().fileName(fileDto.getFileName()).fileToUpload(resizedFile).build();
-  }
-
-  private void writeBufferedToFile(BufferedImage bufferedImage, File resizedFile) {
-    try {
-      ImageIO.write(bufferedImage, "jpg", resizedFile);
-    } catch (IOException e) {
-      throw new IllegalArgumentException("Unable to re-write buffered image back to file");
-    }
-  }
-
-  private BufferedImage fileToBufferedImage(FileDto fileDto) {
-    try {
-      if (fileDto.getBytes() != null && fileDto.getBytes().length > 0) {
-        return ImageIO.read(new ByteArrayInputStream(fileDto.getBytes()));
-      }
-      return ImageIO.read(fileDto.getFileToUpload());
-    } catch (IOException e) {
-      throw new IllegalArgumentException("Unable to convert file to buffered image");
-    }
-
-  }
-
-  private byte[] fileToBytes(FileDto dto) {
-    if (dto.getBytes() != null && dto.getBytes().length > 0) {
-      return dto.getBytes();
-    }
-    final File file = dto.getFileToUpload();
-    try {
-      return Files.readAllBytes(file.toPath());
-    } catch (IOException e) {
-      throw new IllegalArgumentException("Invalid file passed to upload");
-    }
-  }
-
-  private static BufferedImage resizeImage(BufferedImage originalImage, Double maxImageSize) {
-
-    int type = originalImage.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : originalImage.getType();
-
-    Double width = Double.valueOf(originalImage.getWidth());
-    Double height = Double.valueOf(originalImage.getHeight());
-    if (width < maxImageSize && height < maxImageSize) {
-      return originalImage;
-    }
-    if (width > height) {
-      height = maxImageSize * (height / width);
-      width = maxImageSize;
-    } else {
-      width = maxImageSize * (width / height);
-      height = maxImageSize;
-    }
-
-    BufferedImage resizedImage = new BufferedImage(width.intValue(), height.intValue(), type);
-    Graphics2D g = resizedImage.createGraphics();
-    g.drawImage(originalImage, 0, 0, width.intValue(), height.intValue(), null);
-    g.dispose();
-    return resizedImage;
+  public Path download(String key, String bucket, String dir) {
+    Path outputFile = createTempFile(key, dir);
+    Blob blob = storage.get(BlobId.of(bucket, key));
+    blob.downloadTo(outputFile);
+    return outputFile;
   }
 
 }

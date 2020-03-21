@@ -2,30 +2,27 @@ package com.sixsprints.storage;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.amazonaws.regions.Regions;
 import com.google.common.collect.Lists;
-import com.google.common.io.Resources;
 import com.sixsprints.storage.dto.Credentials;
 import com.sixsprints.storage.dto.FileDto;
 import com.sixsprints.storage.service.CloudStorage;
-import com.sixsprints.storage.service.impl.GoogleCloudStorage;
+import com.sixsprints.storage.service.impl.S3CloudStorage;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class GoogleCloudStorageTest {
+public class S3StorageTest {
 
-  private static final String PROJECT_ID = "six-sprints-cloud";
+  private static final String ACCESS_ID = "AKIAVICIPFVWGA6LD5BO";
 
-  private static final String BUCKET_NAME = "smart-departure-dev";
+  private static final String SECRET_KEY = "O54PGWH/mHcDLsGkikgaFeJsfLwP/sVr3OsnSUga";
 
-  private static final String AUTH_JSON = "storage-cred-dev.json";
+  private static final String BUCKET_NAME = "cloudscans";
 
   @Test
   public void shouldUpload() throws IOException {
@@ -42,23 +39,14 @@ public class GoogleCloudStorageTest {
   }
 
   @Test
-  public void shouldDownload() throws IOException {
-    CloudStorage storageService = storage();
-    Path path = storageService.download("0flower.jpeg", BUCKET_NAME);
-    System.out.println(path);
-    Files.delete(path);
-  }
-
-  @Test
   public void shouldProcessBatch() throws IOException {
     CloudStorage storageService = storage();
     storageService.downloadAndBatchProcess("out.csv", BUCKET_NAME, 100, this::process);
   }
 
-  private CloudStorage storage() throws IOException {
-    InputStream stream = Resources.getResource(AUTH_JSON).openStream();
-    CloudStorage storageService = new GoogleCloudStorage(
-      Credentials.builder().file(stream).projectId(PROJECT_ID)
+  private CloudStorage storage() {
+    CloudStorage storageService = new S3CloudStorage(
+      Credentials.builder().accessId(ACCESS_ID).secretKey(SECRET_KEY).region(Regions.AP_SOUTH_1)
         .build());
     return storageService;
   }
