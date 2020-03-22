@@ -14,10 +14,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import javax.imageio.ImageIO;
 
+import com.google.api.client.util.Maps;
 import com.google.common.collect.Lists;
 import com.sixsprints.storage.dto.FileDto;
 import com.sixsprints.storage.service.CloudStorage;
@@ -42,7 +45,19 @@ public abstract class AbstractCloudStorageService implements CloudStorage {
 
   @Override
   public <T> List<T> downloadAndBatchProcess(String key, String bucket, int batchSize,
-    Function<List<String>, List<T>> func)
+    Function<List<String>, List<T>> func) throws IOException {
+    BiFunction<List<String>, Map<String, Object>, List<T>> biFunc = new BiFunction<List<String>, Map<String, Object>, List<T>>() {
+      @Override
+      public List<T> apply(List<String> t, Map<String, Object> u) {
+        return func.apply(t);
+      }
+    };
+    return downloadAndBatchProcess(key, bucket, batchSize, biFunc, Maps.newHashMap());
+  }
+
+  @Override
+  public <T> List<T> downloadAndBatchProcess(String key, String bucket, int batchSize,
+    BiFunction<List<String>, Map<String, Object>, List<T>> func, Map<String, Object> extraProps)
     throws IOException {
     Path path = download(key, bucket);
     InputStream inputStream = Files.newInputStream(path);
@@ -51,7 +66,7 @@ public abstract class AbstractCloudStorageService implements CloudStorage {
     List<T> result = Lists.newArrayList();
     while (moreLines) {
       List<String> batch = readBatch(reader, batchSize);
-      result.addAll(func.apply(batch));
+      result.addAll(func.apply(batch, extraProps));
       if (batch.size() < batchSize) {
         moreLines = false;
       }

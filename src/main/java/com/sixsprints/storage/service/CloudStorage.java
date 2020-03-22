@@ -3,6 +3,8 @@ package com.sixsprints.storage.service;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import com.sixsprints.storage.dto.FileDto;
@@ -17,7 +19,12 @@ public interface CloudStorage {
 
   Path download(String key, String bucket, String dir) throws IOException;
 
-  <T> List<T> downloadAndBatchProcess(String key, String bucket, int batchSize, Function<List<String>, List<T>> func)
+  <T> List<T> downloadAndBatchProcess(String key, String bucket, int batchSize,
+    Function<List<String>, List<T>> func)
+    throws IOException;
+
+  <T> List<T> downloadAndBatchProcess(String key, String bucket, int batchSize,
+    BiFunction<List<String>, Map<String, Object>, List<T>> func, Map<String, Object> extraProps)
     throws IOException;
 
 }
