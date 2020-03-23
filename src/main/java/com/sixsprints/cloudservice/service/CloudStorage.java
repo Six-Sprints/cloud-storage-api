@@ -1,4 +1,4 @@
-package com.sixsprints.storage.service;
+package com.sixsprints.cloudservice.service;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import com.sixsprints.storage.dto.FileDto;
+import com.sixsprints.cloudservice.dto.FileDto;
 
 public interface CloudStorage {
 

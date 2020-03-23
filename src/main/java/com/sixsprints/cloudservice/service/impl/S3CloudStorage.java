@@ -1,4 +1,4 @@
-package com.sixsprints.storage.service.impl;
+package com.sixsprints.cloudservice.service.impl;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,9 +11,9 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import com.sixsprints.storage.dto.Credentials;
-import com.sixsprints.storage.dto.FileDto;
-import com.sixsprints.storage.service.CloudStorage;
+import com.sixsprints.cloudservice.dto.Credentials;
+import com.sixsprints.cloudservice.dto.FileDto;
+import com.sixsprints.cloudservice.service.CloudStorage;
 
 public class S3CloudStorage extends AbstractCloudStorageService implements CloudStorage {
 

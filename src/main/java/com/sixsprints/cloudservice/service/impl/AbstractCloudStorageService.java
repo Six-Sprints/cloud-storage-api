@@ -1,4 +1,4 @@
-package com.sixsprints.storage.service.impl;
+package com.sixsprints.cloudservice.service.impl;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -22,8 +22,8 @@ import javax.imageio.ImageIO;
 
 import com.google.api.client.util.Maps;
 import com.google.common.collect.Lists;
-import com.sixsprints.storage.dto.FileDto;
-import com.sixsprints.storage.service.CloudStorage;
+import com.sixsprints.cloudservice.dto.FileDto;
+import com.sixsprints.cloudservice.service.CloudStorage;
 
 public abstract class AbstractCloudStorageService implements CloudStorage {
 

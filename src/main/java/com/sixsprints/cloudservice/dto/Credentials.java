@@ -1,4 +1,4 @@
-package com.sixsprints.storage.dto;
+package com.sixsprints.cloudservice.dto;
 
 import java.io.InputStream;
 

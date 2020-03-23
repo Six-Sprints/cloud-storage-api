@@ -1,4 +1,4 @@
-package com.sixsprints.storage.service.impl;
+package com.sixsprints.cloudservice.service.impl;
 
 import java.nio.file.Path;
 
@@ -8,13 +8,10 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
-import com.sixsprints.storage.dto.Credentials;
-import com.sixsprints.storage.dto.FileDto;
-import com.sixsprints.storage.service.CloudStorage;
+import com.sixsprints.cloudservice.dto.Credentials;
+import com.sixsprints.cloudservice.dto.FileDto;
+import com.sixsprints.cloudservice.service.CloudStorage;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class GoogleCloudStorage extends AbstractCloudStorageService implements CloudStorage {
 
   private static final String BASE_URL = "https://storage.googleapis.com/";
@@ -27,7 +24,6 @@ public class GoogleCloudStorage extends AbstractCloudStorageService implements C
       this.storage = StorageOptions.newBuilder().setCredentials(credentials)
         .setProjectId(cred.getProjectId()).build().getService();
     } catch (Exception e) {
-      log.error(e.getMessage(), e);
       throw new IllegalArgumentException("Invalid Credentials Passed");
     }
   }
