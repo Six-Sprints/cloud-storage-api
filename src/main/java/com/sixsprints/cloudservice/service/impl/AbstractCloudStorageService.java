@@ -137,8 +137,10 @@ public abstract class AbstractCloudStorageService implements CloudStorage {
     return resizedImage;
   }
 
-  protected Path createTempFile(String key, String dir) {
-    return Paths.get(dir, randomUUID().toString(), key.replaceAll("/", "-"));
+  protected Path createTempFile(String key, String dir) throws IOException {
+    Path path = Paths.get(dir, randomUUID().toString(), key.replaceAll("/", "-"));
+    Files.createDirectories(path);
+    return path;
   }
 
   private List<String> readBatch(BufferedReader reader, int batchSize) throws IOException {

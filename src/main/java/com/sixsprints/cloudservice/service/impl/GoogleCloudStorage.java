@@ -1,5 +1,6 @@
 package com.sixsprints.cloudservice.service.impl;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 import com.google.auth.oauth2.GoogleCredentials;
@@ -38,7 +39,7 @@ public class GoogleCloudStorage extends AbstractCloudStorageService implements C
   }
 
   @Override
-  public Path download(String key, String bucket, String dir) {
+  public Path download(String key, String bucket, String dir) throws IOException {
     Path outputFile = createTempFile(key, dir);
     Blob blob = storage.get(BlobId.of(bucket, key));
     blob.downloadTo(outputFile);
