@@ -138,9 +138,9 @@ public abstract class AbstractCloudStorageService implements CloudStorage {
   }
 
   protected Path createTempFile(String key, String dir) throws IOException {
-    Path path = Paths.get(dir, randomUUID().toString(), key.replaceAll("/", "-"));
+    Path path = Paths.get(dir, randomUUID().toString());
     Files.createDirectories(path);
-    return path;
+    return Paths.get(path.toAbsolutePath().toString(), key.replaceAll("/", "-"));
   }
 
   private List<String> readBatch(BufferedReader reader, int batchSize) throws IOException {
