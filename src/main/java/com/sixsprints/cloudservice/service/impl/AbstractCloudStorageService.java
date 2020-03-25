@@ -1,5 +1,7 @@
 package com.sixsprints.cloudservice.service.impl;
 
+import static java.util.UUID.randomUUID;
+
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -11,8 +13,8 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -27,8 +29,6 @@ import com.sixsprints.cloudservice.service.CloudStorage;
 
 public abstract class AbstractCloudStorageService implements CloudStorage {
 
-  private static final String DEFAULT_DIR = "/tmp/";
-
   @Override
   public String resizeAndUpload(final FileDto fileDto, final String bucket, final Double maxImageSize) {
     BufferedImage bufferedImage = fileToBufferedImage(fileDto);
@@ -40,7 +40,8 @@ public abstract class AbstractCloudStorageService implements CloudStorage {
 
   @Override
   public Path download(String key, String bucket) throws IOException {
-    return download(key, bucket, DEFAULT_DIR);
+    Path tmp = Files.createTempDirectory(null, new FileAttribute<?>[0]);
+    return download(key, bucket, tmp.toAbsolutePath().toString());
   }
 
   @Override
@@ -137,7 +138,7 @@ public abstract class AbstractCloudStorageService implements CloudStorage {
   }
 
   protected Path createTempFile(String key, String dir) {
-    return Paths.get(dir + new Date().getTime() + key.replaceAll("/", "-"));
+    return Paths.get(dir, randomUUID().toString(), key.replaceAll("/", "-"));
   }
 
   private List<String> readBatch(BufferedReader reader, int batchSize) throws IOException {

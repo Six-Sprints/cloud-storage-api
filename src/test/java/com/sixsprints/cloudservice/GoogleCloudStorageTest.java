@@ -28,11 +28,11 @@ public class GoogleCloudStorageTest extends TestCase {
     return new TestSuite(GoogleCloudStorageTest.class);
   }
 
-  private static final String PROJECT_ID = "six-sprints-cloud";
+  private static final String PROJECT_ID = "";
 
-  private static final String BUCKET_NAME = "smart-departure-dev";
+  private static final String BUCKET_NAME = "";
 
-  private static final String AUTH_JSON = "storage-cred-dev.json";
+  private static final String AUTH_JSON = "";
 
   public void testShouldUpload() throws IOException {
     CloudStorage storageService = storage();
