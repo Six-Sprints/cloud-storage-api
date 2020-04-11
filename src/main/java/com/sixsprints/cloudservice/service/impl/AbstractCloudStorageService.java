@@ -33,7 +33,7 @@ public abstract class AbstractCloudStorageService implements CloudStorage {
   public String resizeAndUpload(final FileDto fileDto, final String bucket, final Double maxImageSize) {
     BufferedImage bufferedImage = fileToBufferedImage(fileDto);
     bufferedImage = resizeImage(bufferedImage, maxImageSize);
-    File resizedFile = fileDto.getFileToUpload();
+    File resizedFile = fileDtoToFile(fileDto);
     writeBufferedToFile(bufferedImage, resizedFile);
     return upload(cloneFileDto(fileDto, resizedFile), bucket);
   }
@@ -154,6 +154,20 @@ public abstract class AbstractCloudStorageService implements CloudStorage {
       }
     }
     return result;
+  }
+
+  private File fileDtoToFile(FileDto fileDto) {
+    if (fileDto.getFileToUpload() != null) {
+      return fileDto.getFileToUpload();
+    }
+    try {
+      return Files
+        .write(Files.createTempDirectory(null, new FileAttribute<?>[0]), fileDto.getBytes())
+        .toFile();
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(ex.getMessage(), ex);
+    }
+
   }
 
 }
