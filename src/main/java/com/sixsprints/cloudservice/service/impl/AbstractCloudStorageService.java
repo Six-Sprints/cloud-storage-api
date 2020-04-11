@@ -162,7 +162,8 @@ public abstract class AbstractCloudStorageService implements CloudStorage {
     }
     try {
       return Files
-        .write(Files.createTempDirectory(null, new FileAttribute<?>[0]), fileDto.getBytes())
+        .write(createTempFile(randomUUID().toString() + fileDto.getFileName(),
+          Files.createTempDirectory(null, new FileAttribute<?>[0]).toAbsolutePath().toString()), fileDto.getBytes())
         .toFile();
     } catch (Exception ex) {
       throw new IllegalArgumentException(ex.getMessage(), ex);
