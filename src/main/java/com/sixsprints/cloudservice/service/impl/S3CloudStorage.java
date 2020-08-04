@@ -21,7 +21,7 @@ public class S3CloudStorage extends AbstractCloudStorageService implements Cloud
 
   private Credentials cred;
 
-  // "https://{bucket}.s3.{region}.amazonaws.com/{fileName}";
+  // https://{bucket}.s3.{region}.amazonaws.com/{fileName}
   private static final String BASE_URL = "https://%1$s.s3.%2$s.amazonaws.com/%3$s";
 
   public S3CloudStorage(Credentials cred) {
@@ -39,7 +39,7 @@ public class S3CloudStorage extends AbstractCloudStorageService implements Cloud
     client.putObject(
       bucket,
       fileDto.getFileName(),
-      fileDto.getFileToUpload());
+      fileDtoToFile(fileDto));
     return String.format(BASE_URL, bucket, cred.getRegion().getName().toLowerCase(), fileDto.getFileName());
   }
 

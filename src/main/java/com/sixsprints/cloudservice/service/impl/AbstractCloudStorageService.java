@@ -112,6 +112,20 @@ public abstract class AbstractCloudStorageService implements CloudStorage {
       throw new IllegalArgumentException("Invalid file passed to upload");
     }
   }
+  
+  protected File fileDtoToFile(FileDto fileDto) {
+    if (fileDto.getFileToUpload() != null) {
+      return fileDto.getFileToUpload();
+    }
+    try {
+      return Files
+        .write(createTempFile(randomUUID().toString() + fileDto.getFileName(),
+          Files.createTempDirectory(null, new FileAttribute<?>[0]).toAbsolutePath().toString()), fileDto.getBytes())
+        .toFile();
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(ex.getMessage(), ex);
+    }
+  }
 
   protected static BufferedImage resizeImage(BufferedImage originalImage, Double maxImageSize) {
 
@@ -154,21 +168,6 @@ public abstract class AbstractCloudStorageService implements CloudStorage {
       }
     }
     return result;
-  }
-
-  private File fileDtoToFile(FileDto fileDto) {
-    if (fileDto.getFileToUpload() != null) {
-      return fileDto.getFileToUpload();
-    }
-    try {
-      return Files
-        .write(createTempFile(randomUUID().toString() + fileDto.getFileName(),
-          Files.createTempDirectory(null, new FileAttribute<?>[0]).toAbsolutePath().toString()), fileDto.getBytes())
-        .toFile();
-    } catch (Exception ex) {
-      throw new IllegalArgumentException(ex.getMessage(), ex);
-    }
-
   }
 
 }
