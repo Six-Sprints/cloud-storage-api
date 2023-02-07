@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
+
 import com.amazonaws.regions.Regions;
 import com.google.common.collect.Lists;
 import com.sixsprints.cloudservice.dto.Credentials;
@@ -19,18 +21,21 @@ public class S3StorageTest {
 
   private static final String BUCKET_NAME = "";
 
+  @Test
   public void testShouldUpload() throws IOException {
     CloudStorage storageService = storage();
     String upload = storageService.upload(createFileDto(0), BUCKET_NAME);
     System.out.println(upload);
   }
 
+  @Test
   public void testShouldResizeAndUpload() throws IOException {
     CloudStorage storageService = storage();
     String upload = storageService.resizeAndUpload(createFileDto(1), BUCKET_NAME, 50D);
     System.out.println(upload);
   }
 
+  @Test
   public void testShouldProcessBatch() throws IOException {
     CloudStorage storageService = storage();
     storageService.downloadAndBatchProcess("out.csv", BUCKET_NAME, 100, this::process);
