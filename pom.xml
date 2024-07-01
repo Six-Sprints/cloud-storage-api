@@ -5,7 +5,7 @@
 
 	<groupId>com.sixsprints</groupId>
 	<artifactId>cloud-service</artifactId>
-	<version>1.1.2</version>
+	<version>1.1.3</version>
 	<packaging>jar</packaging>
 
 	<name>cloud-service</name>
@@ -13,12 +13,12 @@
 	<properties>
 		<java.version>17</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<google.cloud.storage.version>2.17.2</google.cloud.storage.version>
-		<aws.java.sdk.s3>1.12.400</aws.java.sdk.s3>
-		<aws.lambda.java.events>3.11.0</aws.lambda.java.events>
-		<lombok.version>1.18.26</lombok.version>
-		<junit.version>5.9.2</junit.version>
-		<maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
+		<google.cloud.storage.version>2.40.1</google.cloud.storage.version>
+		<aws.java.sdk.s3>1.12.753</aws.java.sdk.s3>
+		<aws.lambda.java.events>3.11.6</aws.lambda.java.events>
+		<lombok.version>1.18.34</lombok.version>
+		<junit.version>5.10.3</junit.version>
+		<maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
 	</properties>
 
 	<dependencies>

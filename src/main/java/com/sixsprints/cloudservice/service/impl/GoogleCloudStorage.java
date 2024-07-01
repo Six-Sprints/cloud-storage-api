@@ -22,8 +22,11 @@ public class GoogleCloudStorage extends AbstractCloudStorageService implements C
   public GoogleCloudStorage(Credentials cred) {
     try {
       com.google.auth.Credentials credentials = GoogleCredentials.fromStream(cred.getFile());
-      this.storage = StorageOptions.newBuilder().setCredentials(credentials)
-        .setProjectId(cred.getProjectId()).build().getService();
+      this.storage = StorageOptions.newBuilder()
+        .setCredentials(credentials)
+        .setProjectId(cred.getProjectId())
+        .build()
+        .getService();
     } catch (Exception e) {
       throw new IllegalArgumentException("Invalid Credentials Passed");
     }
@@ -35,7 +38,11 @@ public class GoogleCloudStorage extends AbstractCloudStorageService implements C
     byte[] bytes = fileToBytes(fileDto);
     storage.create(
       BlobInfo.newBuilder(bucket, fileName).build(), bytes);
-    return new StringBuffer(BASE_URL).append(bucket).append("/").append(fileDto.getFileName()).toString();
+    return new StringBuffer(BASE_URL)
+      .append(bucket)
+      .append("/")
+      .append(fileDto.getFileName())
+      .toString();
   }
 
   @Override
