@@ -51,6 +51,18 @@ public class GoogleCloudStorageTest {
     CloudStorage storageService = storage();
     storageService.downloadAndBatchProcess("out.csv", BUCKET_NAME, 100, this::process);
   }
+  
+  @Test
+  public void checkFileExists() throws IOException {
+	CloudStorage storageService = storage();
+	storageService.doesObjectExist(createFileDto(0).getFileName(), BUCKET_NAME, "");
+  }
+  
+  @Test
+  public void getPreSignedURL() throws IOException {
+	CloudStorage storageService = storage();
+	storageService.getPresignedURL(null, createFileDto(0).getFileName(), BUCKET_NAME, "");
+  }
 
   private CloudStorage storage() throws IOException {
     InputStream stream = Resources.getResource(AUTH_JSON).openStream();
