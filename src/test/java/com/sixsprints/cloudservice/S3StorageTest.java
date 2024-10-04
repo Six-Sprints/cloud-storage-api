@@ -2,6 +2,7 @@ package com.sixsprints.cloudservice;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,20 @@ public class S3StorageTest {
   public void testShouldProcessBatch() throws IOException {
     CloudStorage storageService = storage();
     storageService.downloadAndBatchProcess("out.csv", BUCKET_NAME, 100, this::process);
+  }
+  
+  @Test
+  public void checkFileExists() {
+	CloudStorage storageService = storage();
+	Boolean status = storageService.doesObjectExist(createFileDto(0).getFileName(), BUCKET_NAME, "");
+	System.out.println("Exist "+ status);
+  }
+  
+  @Test
+  public void getPreSignedURL() {
+	CloudStorage storageService = storage();
+	URL url = storageService.getPresignedURL(null, createFileDto(0).getFileName(), BUCKET_NAME, "");
+	System.out.println("Exist "+ url.toString());
   }
 
   private CloudStorage storage() {
