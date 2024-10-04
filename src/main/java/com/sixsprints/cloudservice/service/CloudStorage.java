@@ -1,6 +1,7 @@
 package com.sixsprints.cloudservice.service;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,10 @@ public interface CloudStorage {
   Path download(String key, String bucket) throws IOException;
 
   Path download(String key, String bucket, String dir) throws IOException;
+  
+  boolean doesObjectExist(String key, String bucket, String dir);
+  
+  URL getPresignedURL(Integer validityInDays, String key, String bucket, String dir);
 
   <T> List<T> downloadAndBatchProcess(String key, String bucket, int batchSize,
     Function<List<String>, List<T>> func)

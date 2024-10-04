@@ -1,14 +1,18 @@
 package com.sixsprints.cloudservice.service.impl;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Date;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.sixsprints.cloudservice.dto.Credentials;
@@ -50,6 +54,37 @@ public class S3CloudStorage extends AbstractCloudStorageService implements Cloud
     S3ObjectInputStream inputStream = s3object.getObjectContent();
     Files.copy(inputStream, outputFile);
     return outputFile;
+  }
+  
+  @Override
+  public boolean doesObjectExist(String key, String bucket, String dir) {
+    try {
+      return client.doesObjectExist(bucket, key);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return false;
+  }
+
+  @Override
+  public URL getPresignedURL(Integer validityInDays, String key, String bucket, String dir) {
+    try {
+      Date expiration = new Date();
+      long expTimeMillis = expiration.getTime();
+      // Default 30 Minutes
+      if (validityInDays == null) {
+          expTimeMillis += 1000 * 60 * 30;
+      } else {
+          expTimeMillis += ((1000 * 60 * 60) * 24) * validityInDays;
+      }
+      expiration.setTime(expTimeMillis);
+      GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucket, key).withMethod(
+        HttpMethod.GET).withExpiration(expiration);
+      return client.generatePresignedUrl(generatePresignedUrlRequest);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
 }
