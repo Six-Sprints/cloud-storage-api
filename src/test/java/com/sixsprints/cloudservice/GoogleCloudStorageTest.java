@@ -46,14 +46,13 @@ public class GoogleCloudStorageTest {
   @Test
   public void checkFileExists() throws IOException {
     CloudStorage storageService = storage();
-    storageService.doesObjectExist(createFileDto(0).getFileName(), BUCKET_NAME, "");
+    storageService.doesObjectExist(createFileDto(0).getFileName(), BUCKET_NAME);
   }
 
   @Test
   public void getPreSignedURL() throws IOException {
     CloudStorage storageService = storage();
-    storageService.getPresignedURL(TimeUnit.DAYS, 1, createFileDto(0).getFileName(), BUCKET_NAME,
-        "");
+    storageService.getPresignedURL(TimeUnit.DAYS, 1, createFileDto(0).getFileName(), BUCKET_NAME);
   }
 
   private CloudStorage storage() throws IOException {

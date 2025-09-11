@@ -36,8 +36,7 @@ public class S3StorageTest {
   @Test
   public void checkFileExists() {
     CloudStorage storageService = storage();
-    Boolean status =
-        storageService.doesObjectExist(createFileDto(0).getFileName(), BUCKET_NAME, "");
+    Boolean status = storageService.doesObjectExist(createFileDto(0).getFileName(), BUCKET_NAME);
     System.out.println("Exist " + status);
   }
 
@@ -45,7 +44,7 @@ public class S3StorageTest {
   public void getPreSignedURL() {
     CloudStorage storageService = storage();
     URL url = storageService.getPresignedURL(TimeUnit.DAYS, 1, createFileDto(0).getFileName(),
-        BUCKET_NAME, "");
+        BUCKET_NAME);
     System.out.println("PreSigned URL " + url.toString());
   }
 

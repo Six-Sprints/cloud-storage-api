@@ -50,10 +50,10 @@ public class GoogleCloudStorage extends AbstractCloudStorageService {
   }
 
   @Override
-  public boolean doesObjectExist(String key, String bucket, String dir) {
+  public boolean doesObjectExist(String key, String bucket) {
     try {
       Page<Blob> blobs =
-          storage.list(bucket, BlobListOption.currentDirectory(), BlobListOption.prefix(dir + key));
+          storage.list(bucket, BlobListOption.currentDirectory(), BlobListOption.prefix(key));
       Iterator<Blob> blobIterator = blobs.iterateAll().iterator();
       while (blobIterator.hasNext()) {
         return true;
@@ -65,14 +65,13 @@ public class GoogleCloudStorage extends AbstractCloudStorageService {
   }
 
   @Override
-  public URL getPresignedURL(TimeUnit validity, Integer validityValue, String key, String bucket,
-      String dir) {
+  public URL getPresignedURL(TimeUnit validity, Integer validityValue, String key, String bucket) {
     try {
       if (validityValue == null) {
         validityValue = 30;
       }
-      return storage.signUrl(BlobInfo.newBuilder(bucket, dir + key).build(), validityValue,
-          validity, Storage.SignUrlOption.withVirtualHostedStyle());
+      return storage.signUrl(BlobInfo.newBuilder(bucket, key).build(), validityValue, validity,
+          Storage.SignUrlOption.withVirtualHostedStyle());
     } catch (Exception e) {
       e.printStackTrace();
     }

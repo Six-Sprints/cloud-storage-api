@@ -57,7 +57,7 @@ public class S3CloudStorage extends AbstractCloudStorageService {
   }
 
   @Override
-  public boolean doesObjectExist(String key, String bucket, String dir) {
+  public boolean doesObjectExist(String key, String bucket) {
     try {
       return client.headObject(HeadObjectRequest.builder().bucket(bucket).key(key).build())
           .sdkHttpResponse().isSuccessful();
@@ -68,8 +68,7 @@ public class S3CloudStorage extends AbstractCloudStorageService {
   }
 
   @Override
-  public URL getPresignedURL(TimeUnit validity, Integer validityValue, String key, String bucket,
-      String dir) {
+  public URL getPresignedURL(TimeUnit validity, Integer validityValue, String key, String bucket) {
 
     if (validityValue == null) {
       validityValue = 30;
