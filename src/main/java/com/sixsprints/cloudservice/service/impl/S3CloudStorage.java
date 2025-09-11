@@ -4,24 +4,27 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Date;
-
-import com.amazonaws.HttpMethod;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import java.util.concurrent.TimeUnit;
 import com.sixsprints.cloudservice.dto.Credentials;
 import com.sixsprints.cloudservice.dto.FileDto;
-import com.sixsprints.cloudservice.service.CloudStorage;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
+import java.time.Duration;
 
-public class S3CloudStorage extends AbstractCloudStorageService implements CloudStorage {
+public class S3CloudStorage extends AbstractCloudStorageService {
 
-  private final AmazonS3 client;
+  private final S3Client client;
 
   private Credentials cred;
 
@@ -30,36 +33,34 @@ public class S3CloudStorage extends AbstractCloudStorageService implements Cloud
 
   public S3CloudStorage(Credentials cred) {
     this.cred = cred;
-    AWSCredentials credentials = new BasicAWSCredentials(cred.getAccessId(), cred.getSecretKey());
-    client = AmazonS3ClientBuilder
-      .standard()
-      .withCredentials(new AWSStaticCredentialsProvider(credentials))
-      .withRegion(cred.getRegion())
-      .build();
+    AwsCredentials credentials =
+        AwsBasicCredentials.create(cred.getAccessId(), cred.getSecretKey());
+    client = S3Client.builder().credentialsProvider(StaticCredentialsProvider.create(credentials))
+        .region(cred.getRegion()).build();
   }
 
   @Override
   public String upload(FileDto fileDto, String bucket) {
-    client.putObject(
-      bucket,
-      fileDto.getFileName(),
-      fileDtoToFile(fileDto));
-    return String.format(BASE_URL, bucket, cred.getRegion().getName().toLowerCase(), fileDto.getFileName());
+    client.putObject(PutObjectRequest.builder().bucket(bucket).key(fileDto.getFileName()).build(),
+        RequestBody.fromFile(fileDtoToFile(fileDto)));
+    return String.format(BASE_URL, bucket, cred.getRegion().toString().toLowerCase(),
+        fileDto.getFileName());
   }
 
   @Override
   public Path download(String key, String bucket, String dir) throws IOException {
     Path outputFile = createTempFile(key, dir);
-    S3Object s3object = client.getObject(bucket, key);
-    S3ObjectInputStream inputStream = s3object.getObjectContent();
-    Files.copy(inputStream, outputFile);
+    ResponseInputStream<GetObjectResponse> s3object =
+        client.getObject(GetObjectRequest.builder().bucket(bucket).key(key).build());
+    Files.copy(s3object, outputFile);
     return outputFile;
   }
-  
+
   @Override
   public boolean doesObjectExist(String key, String bucket, String dir) {
     try {
-      return client.doesObjectExist(bucket, key);
+      return client.headObject(HeadObjectRequest.builder().bucket(bucket).key(key).build())
+          .sdkHttpResponse().isSuccessful();
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -67,24 +68,40 @@ public class S3CloudStorage extends AbstractCloudStorageService implements Cloud
   }
 
   @Override
-  public URL getPresignedURL(Integer validityInDays, String key, String bucket, String dir) {
-    try {
-      Date expiration = new Date();
-      long expTimeMillis = expiration.getTime();
-      // Default 30 Minutes
-      if (validityInDays == null) {
-          expTimeMillis += 1000 * 60 * 30;
-      } else {
-          expTimeMillis += ((1000 * 60 * 60) * 24) * validityInDays;
-      }
-      expiration.setTime(expTimeMillis);
-      GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucket, key).withMethod(
-        HttpMethod.GET).withExpiration(expiration);
-      return client.generatePresignedUrl(generatePresignedUrlRequest);
-    } catch (Exception e) {
-      e.printStackTrace();
+  public URL getPresignedURL(TimeUnit validity, Integer validityValue, String key, String bucket,
+      String dir) {
+
+    if (validityValue == null) {
+      validityValue = 30;
     }
-    return null;
+
+    // Convert TimeUnit to Duration
+    Duration duration = Duration.of(validityValue, validity.toChronoUnit());
+
+    // Create S3Presigner with the same credentials and region as the S3Client
+    AwsCredentials credentials =
+        AwsBasicCredentials.create(cred.getAccessId(), cred.getSecretKey());
+    S3Presigner presigner =
+        S3Presigner.builder().credentialsProvider(StaticCredentialsProvider.create(credentials))
+            .region(cred.getRegion()).build();
+
+    try {
+      // Create GetObjectRequest
+      GetObjectRequest getObjectRequest =
+          GetObjectRequest.builder().bucket(bucket).key(key).build();
+
+      // Create presigned request
+      GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+          .getObjectRequest(getObjectRequest).signatureDuration(duration).build();
+
+      // Generate presigned URL
+      PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(presignRequest);
+
+      return presignedRequest.url();
+    } finally {
+      // Close the presigner to free resources
+      presigner.close();
+    }
   }
 
 }

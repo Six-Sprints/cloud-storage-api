@@ -5,11 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
-
-import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 import com.sixsprints.cloudservice.dto.Credentials;
 import com.sixsprints.cloudservice.dto.FileDto;
@@ -47,39 +44,28 @@ public class GoogleCloudStorageTest {
   }
 
   @Test
-  public void testShouldProcessBatch() throws IOException {
-    CloudStorage storageService = storage();
-    storageService.downloadAndBatchProcess("out.csv", BUCKET_NAME, 100, this::process);
-  }
-  
-  @Test
   public void checkFileExists() throws IOException {
-	CloudStorage storageService = storage();
-	storageService.doesObjectExist(createFileDto(0).getFileName(), BUCKET_NAME, "");
+    CloudStorage storageService = storage();
+    storageService.doesObjectExist(createFileDto(0).getFileName(), BUCKET_NAME, "");
   }
-  
+
   @Test
   public void getPreSignedURL() throws IOException {
-	CloudStorage storageService = storage();
-	storageService.getPresignedURL(null, createFileDto(0).getFileName(), BUCKET_NAME, "");
+    CloudStorage storageService = storage();
+    storageService.getPresignedURL(TimeUnit.DAYS, 1, createFileDto(0).getFileName(), BUCKET_NAME,
+        "");
   }
 
   private CloudStorage storage() throws IOException {
     InputStream stream = Resources.getResource(AUTH_JSON).openStream();
-    CloudStorage storageService = new GoogleCloudStorage(
-      Credentials.builder().file(stream).projectId(PROJECT_ID)
-        .build());
+    CloudStorage storageService =
+        new GoogleCloudStorage(Credentials.builder().file(stream).projectId(PROJECT_ID).build());
     return storageService;
   }
 
   private FileDto createFileDto(int i) {
     return FileDto.builder().fileName(i + "flower.jpeg")
-      .fileToUpload(new File("/Users/karan/Desktop/Misc/Pics/download.jpeg"))
-      .build();
-  }
-
-  private List<String> process(List<String> batch) {
-    return Lists.newArrayList();
+        .fileToUpload(new File("/Users/karan/Desktop/Misc/Pics/download.jpeg")).build();
   }
 
 }

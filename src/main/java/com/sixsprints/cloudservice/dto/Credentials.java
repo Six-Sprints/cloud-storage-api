@@ -2,7 +2,7 @@ package com.sixsprints.cloudservice.dto;
 
 import java.io.InputStream;
 
-import com.amazonaws.regions.Regions;
+import software.amazon.awssdk.regions.Region;
 
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +19,6 @@ public class Credentials {
 
   private String secretKey;
 
-  private Regions region;
+  private Region region;
 
 }
