@@ -3,16 +3,13 @@ package com.sixsprints.cloudservice;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
-
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
-
-import com.amazonaws.regions.Regions;
-import com.google.common.collect.Lists;
 import com.sixsprints.cloudservice.dto.Credentials;
 import com.sixsprints.cloudservice.dto.FileDto;
 import com.sixsprints.cloudservice.service.CloudStorage;
 import com.sixsprints.cloudservice.service.impl.S3CloudStorage;
+import software.amazon.awssdk.regions.Region;
 
 public class S3StorageTest {
 
@@ -37,40 +34,30 @@ public class S3StorageTest {
   }
 
   @Test
-  public void testShouldProcessBatch() throws IOException {
-    CloudStorage storageService = storage();
-    storageService.downloadAndBatchProcess("out.csv", BUCKET_NAME, 100, this::process);
-  }
-  
-  @Test
   public void checkFileExists() {
-	CloudStorage storageService = storage();
-	Boolean status = storageService.doesObjectExist(createFileDto(0).getFileName(), BUCKET_NAME, "");
-	System.out.println("Exist "+ status);
+    CloudStorage storageService = storage();
+    Boolean status =
+        storageService.doesObjectExist(createFileDto(0).getFileName(), BUCKET_NAME, "");
+    System.out.println("Exist " + status);
   }
-  
+
   @Test
   public void getPreSignedURL() {
-	CloudStorage storageService = storage();
-	URL url = storageService.getPresignedURL(null, createFileDto(0).getFileName(), BUCKET_NAME, "");
-	System.out.println("Exist "+ url.toString());
+    CloudStorage storageService = storage();
+    URL url = storageService.getPresignedURL(TimeUnit.DAYS, 1, createFileDto(0).getFileName(),
+        BUCKET_NAME, "");
+    System.out.println("PreSigned URL " + url.toString());
   }
 
   private CloudStorage storage() {
-    CloudStorage storageService = new S3CloudStorage(
-      Credentials.builder().accessId(ACCESS_ID).secretKey(SECRET_KEY).region(Regions.AP_SOUTH_1)
-        .build());
+    CloudStorage storageService = new S3CloudStorage(Credentials.builder().accessId(ACCESS_ID)
+        .secretKey(SECRET_KEY).region(Region.AP_SOUTH_1).build());
     return storageService;
   }
 
   private FileDto createFileDto(int i) {
-    return FileDto.builder().fileName(i + "flower.jpeg")
-      .fileToUpload(new File("/Users/karan/Desktop/Misc/Pics/download.jpeg"))
-      .build();
-  }
-
-  private List<String> process(List<String> batch) {
-    return Lists.newArrayList();
+    return FileDto.builder().fileName(i + "Login_v1.png")
+        .fileToUpload(new File("/Users/karan/Desktop/Login_v1.png")).build();
   }
 
 }

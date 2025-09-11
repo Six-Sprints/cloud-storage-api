@@ -5,7 +5,7 @@
 
 	<groupId>com.sixsprints</groupId>
 	<artifactId>cloud-service</artifactId>
-	<version>1.1.5</version>
+	<version>2.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>cloud-service</name>
@@ -13,12 +13,12 @@
 	<properties>
 		<java.version>17</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<google.cloud.storage.version>2.40.1</google.cloud.storage.version>
-		<aws.java.sdk.s3>1.12.753</aws.java.sdk.s3>
-		<aws.lambda.java.events>3.11.6</aws.lambda.java.events>
-		<lombok.version>1.18.34</lombok.version>
-		<junit.version>5.10.3</junit.version>
-		<maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
+		<google.cloud.storage.version>2.57.0</google.cloud.storage.version>
+		<aws.java.sdk.s3>2.33.6</aws.java.sdk.s3>
+		<aws.lambda.java.events>3.16.1</aws.lambda.java.events>
+		<lombok.version>1.18.40</lombok.version>
+		<junit.jupiter.version>5.13.4</junit.jupiter.version>
+		<maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
 	</properties>
 
 	<dependencies>
@@ -28,8 +28,8 @@
 			<version>${google.cloud.storage.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-s3</artifactId>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
 			<version>${aws.java.sdk.s3}</version>
 		</dependency>
 		<dependency>
@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
-			<version>${junit.version}</version>
+			<version>${junit.jupiter.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
